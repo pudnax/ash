@@ -1,9 +1,4 @@
-use ash::{
-    extensions::khr,
-    prelude::*,
-    version::{EntryV1_0, InstanceV1_0},
-    vk,
-};
+use ash::{extensions::khr, prelude::*, vk, EntryCustom, Instance};
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 use std::ffi::CStr;
 
@@ -16,19 +11,15 @@ use ash::extensions::ext; // portability extensions
 ///
 /// # Safety
 ///
-/// In order for the created `SurfaceKHR` to be valid for the duration of its
-/// usage, the `Instance` this was called on must be dropped later than the
-/// resulting `SurfaceKHR`.
-pub unsafe fn create_surface<E, I>(
-    entry: &E,
-    instance: &I,
+/// In order for the created [`vk::SurfaceKHR`] to be valid for the duration of its
+/// usage, the [`Instance`] this was called on must be dropped later than the
+/// resulting [`vk::SurfaceKHR`].
+pub unsafe fn create_surface<L>(
+    entry: &EntryCustom<L>,
+    instance: &Instance,
     window_handle: &dyn HasRawWindowHandle,
     allocation_callbacks: Option<&vk::AllocationCallbacks>,
-) -> VkResult<vk::SurfaceKHR>
-where
-    E: EntryV1_0,
-    I: InstanceV1_0,
-{
+) -> VkResult<vk::SurfaceKHR> {
     match window_handle.raw_window_handle() {
         #[cfg(target_os = "windows")]
         RawWindowHandle::Windows(handle) => {
